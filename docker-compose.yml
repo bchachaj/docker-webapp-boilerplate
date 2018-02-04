@@ -2,7 +2,19 @@ version '3'
 
 services:
   db:
+    image: postgres
+    env_file: postgres.env
+
 
   backend:
+    depends_on:
+      - db
+    env_file: postgres.env
+    build: ./backend
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend:/code
+    ports:
+      - "8000:8000"
 
-  frontend: 
+  frontend:
