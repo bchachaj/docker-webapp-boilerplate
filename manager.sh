@@ -1,28 +1,31 @@
 #!/bin/bash
 
-#1.) Creating django project
+# Creating django project
+
+#a) linux users may need: sudo chown -R $USER:$USER .
+
 
 function set_up_django {
   echo 'Bootstrapping backend...'
   sudo docker-compose run backend django-admin.py startproject $PROJNAME .
 }
 
-  #1.a) linux needs: sudo chown -R $USER:$USER .
 
-#2.) need to then wire database to postgres backend
+# Reset container processes
 
-#3.) docker-compose up
+function bounce_server {
+  docker-compose down && docker-compose up
+}
 
-#4) trying bmf to ready and create migrations
-
-
-#) can remove with rm -rf django once docker down
-
+function dispatch_migrations {
+  docker exec dockerblr_backend_1 python manage.py makemigrations && docker exec dockerblr_backend_1 python manage.py migrate
+}
 
 
 
 START=""
 PROJNAME=""
+MIGRATE=""
 
 while :
 do
@@ -30,7 +33,7 @@ do
 		-s|--setup)
       if [ -z "$2" ]
       then
-        echo "init: please provide a project name"
+        echo "Init: please provide a project name for django directory"
         exit
       fi
       START=$1
@@ -39,6 +42,18 @@ do
       shift
 			break
 			;;
+    -m)
+      # if [ -z "$2" ]
+      # then
+      #   echo "Provide the name used to create your top level directory"
+      #   exit
+      # fi
+      echo "Make migrations and migrate"
+      MIGRATE=$2
+      shift
+      shift
+      break
+      ;;
 		-*)
 			echo Unrecognized option: $1
 			echo
@@ -57,6 +72,7 @@ if [ ! -z "$PROJNAME" ]
     set_up_django
 fi
 
-
-# echo $START
-# echo $PROJNAME
+if [ ! -z "$MIGRATE" ]
+  then
+    dispatch_migrations
+fi
