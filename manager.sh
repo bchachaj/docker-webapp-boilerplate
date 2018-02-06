@@ -17,8 +17,18 @@ function bounce_server {
   docker-compose down && docker-compose up
 }
 
+# TODO: figure out interpolation
+
 function dispatch_migrations {
   docker exec dockerblr_backend_1 python manage.py makemigrations && docker exec dockerblr_backend_1 python manage.py migrate
+}
+
+function startapp-backend {
+  docker exec dockerblr_backend_1 python manage.py startapp api
+}
+
+function create-super-user {
+  docker exec dockerblr_backend_1 python manage.py createsuperuser
 }
 
 

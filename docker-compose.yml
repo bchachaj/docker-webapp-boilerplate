@@ -15,3 +15,11 @@ services:
       - ./backend:/code
     ports:
       - "8000:8000"
+
+  frontend:
+    depends_on:
+      - backend
+    build: ./frontend
+    command: npm start
+    ports:
+      - "8080:8080"
